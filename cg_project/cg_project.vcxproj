@@ -157,6 +157,7 @@
     <ClCompile Include="..\base\model.cpp" />
     <ClCompile Include="..\base\object3d.cpp" />
     <ClCompile Include="..\base\shader.cpp" />
+    <ClCompile Include="..\base\skybox.cpp" />
     <ClCompile Include="..\base\texture.cpp" />
     <ClCompile Include="..\external\glad\src\glad.c" />
     <ClCompile Include="..\external\imgui\imgui.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="..\external\stb\stb_image.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\house_scene.cpp" />
+    <ClCompile Include="..\src\my_obj_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\application.h" />
@@ -181,6 +183,7 @@
     <ClInclude Include="..\base\texture.h" />
     <ClInclude Include="..\base\vertex.h" />
     <ClInclude Include="..\src\house_scene.h" />
+    <ClInclude Include="..\src\my_obj_loader.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

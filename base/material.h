@@ -15,4 +15,6 @@ struct Material {
 	float Ni;
 	// 渐隐指数
 	float d;
+	// 光照类型
+	unsigned int illum;
 };

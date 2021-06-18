@@ -81,6 +81,12 @@
     <ClCompile Include="..\src\house_scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\base\skybox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\my_obj_loader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\application.h">
@@ -93,9 +99,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\base\object3d.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\base\vertex.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\base\texture.h">
@@ -115,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="..\base\material.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\my_obj_loader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\base\vertex.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

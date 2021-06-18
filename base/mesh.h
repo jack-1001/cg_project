@@ -13,7 +13,7 @@ public:
 	std::vector<Texture2D> _textures;
 	Material _mat;
 	unsigned int _vao;
-	unsigned int _uniformBlockIndex;
+	//unsigned int _uniformBlockIndex;
 	//constructor
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture2D> textures,Material mat);
 

@@ -34,7 +34,10 @@ void Mesh::draw(Shader& shader)
     }
     // draw mesh
     glBindVertexArray(_vao);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uniformBlockIndex, 0, sizeof(Material));
+    //glBindBuffer(GL_UNIFORM_BUFFER, _uniformBlockIndex);
+    //glBufferData(GL_UNIFORM_BUFFER, sizeof(Material), NULL, GL_STATIC_DRAW); 
+    //glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
     glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     // always good practice to set everything back to defaults once configured.
@@ -46,7 +49,7 @@ void Mesh::setupMesh()
     glGenVertexArrays(1, &_vao);
     glGenBuffers(1, &_vbo);
     glGenBuffers(1, &_ebo);
-    glGenBuffers(1, &_uniformBlockIndex);
+    //glGenBuffers(1, &_uniformBlockIndex);
 
     glBindVertexArray(_vao);
     
@@ -54,8 +57,8 @@ void Mesh::setupMesh()
     glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(Vertex), &_vertices[0], GL_STATIC_DRAW);
 
 
-    glBindBuffer(GL_UNIFORM_BUFFER, _uniformBlockIndex);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(_mat), (void*)(&_mat), GL_STATIC_DRAW);
+   /* glBindBuffer(GL_UNIFORM_BUFFER, _uniformBlockIndex);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(_mat), &_mat, GL_STATIC_DRAW);*/
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int),&_indices[0], GL_STATIC_DRAW);

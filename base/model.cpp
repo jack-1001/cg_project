@@ -64,20 +64,26 @@ void Model::loadModel(std::string path)
 // 递归处理assimp节点
 void Model::processNode(aiNode* node, const aiScene* scene)
 {
-    std::cout << node->mName.data << std::endl;
-    // process each mesh located at the current node
-    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    //std::cout <<"节点名称"<< node->mName.data << std::endl;
+    if (strcmp(node->mName.C_Str(),"Doorframe"))
     {
-        // the node object only contains indices to index the actual objects in the scene. 
-        // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        _meshes.push_back(processMesh(mesh, scene));
+        std::cout << "节点名称" << node->mName.data << std::endl;
+        // process each mesh located at the current node
+        for (unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            // the node object only contains indices to index the actual objects in the scene. 
+            // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            _meshes.push_back(processMesh(mesh, scene));
+        }
+        std::cout << "网格数量" << node->mNumMeshes << std::endl;
+        // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
+        {
+            processNode(node->mChildren[i], scene);
+        }
     }
-    // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
-    for (unsigned int i = 0; i < node->mNumChildren; i++)
-    {
-        processNode(node->mChildren[i], scene);
-    }
+    
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
@@ -137,7 +143,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
             indices.push_back(face.mIndices[j]);
     }
     // process materials
+
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    
     Material mat;
     aiColor3D color;
     float value;
@@ -146,10 +154,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     std::cout << name.data << std::endl;
     material->Get(AI_MATKEY_COLOR_AMBIENT, color);
     mat.Ka = glm::vec4(color.r, color.g, color.b, 1.0f);
-    std::cout << "color" << color.r << color.g << color.b << std::endl;
     material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
     mat.Kd = glm::vec4(color.r, color.g, color.b, 1.0f);
-    std::cout << "color" << color.r << color.g << color.b << std::endl;
+    std::cout << "color:" << color.r << " " << color.g << " " << color.b << std::endl;
     material->Get(AI_MATKEY_COLOR_SPECULAR, color);
     mat.Ks = glm::vec4(color.r, color.g, color.b, 1.0f);
     material->Get(AI_MATKEY_SHININESS, value);
@@ -161,6 +168,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     material->Get(AI_MATKEY_REFRACTI, value);
     mat.Ni = value;
 
+    //std::cout << material->mProperties << std::endl;
     std::vector<Texture2D> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
@@ -207,12 +215,13 @@ std::vector<Texture2D> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTyp
     }
     return textures;
 }
+
 void Model::draw(Shader& shader) {
     for (unsigned int i = 0; i < _meshes.size(); i++)
     {
-        shader.setVec4("Mat.aAmbient",_meshes[i]._mat.Ka);
-        shader.setVec4("Mat.aDiffuse", _meshes[i]._mat.Kd);
-        shader.setVec4("Mat.aSpecular", _meshes[i]._mat.Ks);
+        shader.setVec4("aAmbient",_meshes[i]._mat.Ka);
+        shader.setVec4("aDiffuse", _meshes[i]._mat.Kd);
+        shader.setVec4("aSpecular", _meshes[i]._mat.Ks);
         shader.setFloat("shininess", _meshes[i]._mat.Ns);
         _meshes[i].draw(shader);
     }
