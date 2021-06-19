@@ -87,6 +87,12 @@
     <ClCompile Include="..\src\my_obj_loader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\basic_object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\base\light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\application.h">
@@ -124,6 +130,15 @@
     </ClInclude>
     <ClInclude Include="..\base\vertex.h">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\basic_object.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\option.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\base\light.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="..\base\application.cpp" />
     <ClCompile Include="..\base\camera.cpp" />
+    <ClCompile Include="..\base\light.cpp" />
     <ClCompile Include="..\base\mesh.cpp" />
     <ClCompile Include="..\base\model.cpp" />
     <ClCompile Include="..\base\object3d.cpp" />
@@ -169,12 +170,14 @@
     <ClCompile Include="..\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\external\stb\stb_image.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\src\basic_object.cpp" />
     <ClCompile Include="..\src\house_scene.cpp" />
     <ClCompile Include="..\src\my_obj_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\application.h" />
     <ClInclude Include="..\base\camera.h" />
+    <ClInclude Include="..\base\light.h" />
     <ClInclude Include="..\base\material.h" />
     <ClInclude Include="..\base\mesh.h" />
     <ClInclude Include="..\base\model.h" />
@@ -182,8 +185,10 @@
     <ClInclude Include="..\base\shader.h" />
     <ClInclude Include="..\base\texture.h" />
     <ClInclude Include="..\base\vertex.h" />
+    <ClInclude Include="..\src\basic_object.h" />
     <ClInclude Include="..\src\house_scene.h" />
     <ClInclude Include="..\src\my_obj_loader.h" />
+    <ClInclude Include="..\src\option.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

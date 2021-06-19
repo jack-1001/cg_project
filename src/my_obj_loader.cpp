@@ -2,7 +2,10 @@
 
 MyObjLoader::MyObjLoader(std::string filepath, std::string textureFilepath) : _filepath(filepath), _textureFilepath(textureFilepath)
 {
-	loadModel();
+    // 先给一个默认的material材质，这个材质之后应该也不会发生啥变化了
+    Material mat = { 32.0f,glm::vec4(0.5f,0.5f,0.5f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(0.01f,0.01f,0.01f,1.0f),1.0f,1.0f,2 };
+    _material = mat;
+    loadModel();
 }
 
 void MyObjLoader::loadModel()
@@ -95,58 +98,28 @@ void MyObjLoader::loadModel()
     glGenBuffers(1, &_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     // 先确定vbo的总数据大小 -- 传NULL指针表示我们暂时不传数据
-    GLuint dataSize = sizeof(glm::vec3) * _points.size() + sizeof(glm::vec2) * _texcoords.size();
+    GLuint dataSize = sizeof(glm::vec3) * _points.size() + sizeof(glm::vec2) * _texcoords.size() + sizeof(glm::vec3) * _normals.size();
     glBufferData(GL_ARRAY_BUFFER, dataSize, NULL, GL_STATIC_DRAW);
 
     // 传送数据到vbo 分别传递 顶点位置 和 顶点纹理坐标
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * _points.size(), &_points[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * _points.size(), sizeof(glm::vec2) * _texcoords.size(), &_texcoords[0]);
-    
-    // 生成着色器程序对象
-    const char* vertCode =
-        "#version 330 core\n"
-        "\n"
-        "in vec3 vPosition;  // cpu传入的顶点坐标\n"
-        "in vec2 vTexcoord;     // cpu传入的顶点纹理坐标\n"
-        "\n"
-        "out vec2 texcoord;   // 传顶点纹理坐标给片元着色器\n"
-        "\n"
-        "uniform mat4 model; // 模型变换矩阵\n"
-        "uniform mat4 view;      // 模型变换矩阵\n"
-        "uniform mat4 projection;    // 模型变换矩阵\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = projection * view * model * vec4(vPosition, 1.0); // 指定ndc坐标\n"
-        "    texcoord = vTexcoord;   // 传递纹理坐标到片段着色器\n"
-        "}\n"
-        "\n";
-    const char* fragCode =
-        "#version 330 core\n"
-        "\n"
-        "in vec3 vColorOut;  // 顶点着色器传递的颜色\n"
-        "in vec2 texcoord;    // 纹理坐标\n"
-        "\n"
-        "out vec4 FragColor;    // 片元输出像素的颜色\n"
-        "\n"
-        "uniform sampler2D Texture;  // 纹理图片\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "    //FragColor =  vec4(texture2D(Texture, vec2(texcoord.s, 1.0 - texcoord.t)).rgb,1.0f);\n"
-        "   FragColor= vec4(1.0f,1.0f,1.0f,1.0f);\n"
-        "}\n";
-    _shader.reset(new Shader(vertCode, fragCode));
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * _points.size()+ sizeof(glm::vec3) * _normals.size(),sizeof(glm::vec2) * _texcoords.size(), &_texcoords[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * _points.size(), sizeof(glm::vec3) * _normals.size(), &_normals[0]);
+    //// 生成着色器程序对象
+    _shaderS.reset(new Shader(vertCode, fragCode));
+    _shaderP.reset(new Shader(vertCode, fragCode1));
     // 建立顶点变量vPosition在着色器中的索引 同时指定vPosition变量的数据解析格式
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,3*sizeof(float), (void*)0);
-    // 顶点法线
+    // 法线
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (GLvoid*)(sizeof(glm::vec3)* _points.size()));
-
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (GLvoid*)(sizeof(glm::vec3)* _points.size()));
+    // 纹理坐标
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (GLvoid*)(sizeof(glm::vec3)* _points.size() + sizeof(glm::vec3) * _normals.size()));
     // 生成纹理
-    Texture2D texture(_textureFilepath);
-    _texture.push_back(texture);
+    
+    _texture.reset(new Texture2D(_textureFilepath));
 
 }
 
@@ -155,7 +128,64 @@ void MyObjLoader::draw(glm::mat4 projection, glm::mat4 view)
     glBindVertexArray(_vao);
     _shader->setMat4("projection", projection);
     _shader->setMat4("view", view);
-    _texture[0].bind();
+    _shader->setInt("Texture",0);
+    glActiveTexture(GL_TEXTURE0);
+    _texture->bind();
+    //std::cout << _points.size() << std::endl;
+    glDrawArrays(GL_TRIANGLES, 0, _points.size());
+    glBindVertexArray(0);
+}
+
+void MyObjLoader::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model,PointLight& light, glm::vec3 viewPos)
+{
+    glBindVertexArray(_vao);
+    _shaderP->use();
+    _shaderP->setMat4("projection", projection);
+    _shaderP->setMat4("view", view);
+    _shaderP->setMat4("model", model);
+    _shaderP->setVec3("light.position", light.position);
+    _shaderP->setVec3("light.color", light.color);
+    _shaderP->setFloat("light.intensity", light.intensity);
+    _shaderP->setFloat("light.constant", light.kc);
+    _shaderP->setFloat("light.linear", light.kl);
+    _shaderP->setFloat("light.quadratic", light.kq);
+    _shaderP->setFloat("light.shininess", _material.Ns);
+    _shaderP->setVec3("viewPos", viewPos);
+    _shaderP->setVec4("Ambient", _material.Ka);
+    _shaderP->setVec4("Diffuse", _material.Kd);
+    _shaderP->setVec4("Specular", _material.Ks);
+    _shaderP->setInt("texture1", 0);
+    glActiveTexture(GL_TEXTURE0);
+    _texture->bind();
+    //std::cout << _points.size() << std::endl;
+    glDrawArrays(GL_TRIANGLES, 0, _points.size());
+    glBindVertexArray(0);
+}
+
+void MyObjLoader::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model,SpotLight& light, glm::vec3 viewPos)
+{
+    glBindVertexArray(_vao);
+    _shaderS->use();
+    _shaderS->setMat4("projection", projection);
+    _shaderS->setMat4("view", view);
+    _shaderS->setMat4("model", model);
+    _shaderS->setVec3("light.position", light.position);
+    _shaderS->setVec3("light.color", light.color);
+    _shaderS->setFloat("light.intensity", light.intensity);
+    _shaderS->setFloat("light.constant", light.kc);
+    _shaderS->setFloat("light.linear", light.kl);
+    _shaderS->setFloat("light.quadratic", light.kq);
+    _shaderS->setFloat("light.shininess", _material.Ns);
+    _shaderS->setVec3("viewPos", viewPos);
+    _shaderS->setVec4("Ambient", _material.Ka);
+    _shaderS->setVec4("Diffuse", _material.Kd);
+    _shaderS->setVec4("Specular", _material.Ks);
+    _shaderS->setVec3("light.direction", light.getFront());
+    _shaderS->setFloat("light.cutOff", glm::cos(light.cutOff));
+    _shaderS->setFloat("light.outerCutOff", glm::cos(light.outerCutOff));
+    _shaderS->setInt("texture1", 0);
+    glActiveTexture(GL_TEXTURE0);
+    _texture->bind();
     //std::cout << _points.size() << std::endl;
     glDrawArrays(GL_TRIANGLES, 0, _points.size());
     glBindVertexArray(0);

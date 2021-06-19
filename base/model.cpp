@@ -67,7 +67,7 @@ void Model::processNode(aiNode* node, const aiScene* scene)
     //std::cout <<"节点名称"<< node->mName.data << std::endl;
     if (strcmp(node->mName.C_Str(),"Doorframe"))
     {
-        std::cout << "节点名称" << node->mName.data << std::endl;
+        //std::cout << "节点名称" << node->mName.data << std::endl;
         // process each mesh located at the current node
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
@@ -76,7 +76,7 @@ void Model::processNode(aiNode* node, const aiScene* scene)
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             _meshes.push_back(processMesh(mesh, scene));
         }
-        std::cout << "网格数量" << node->mNumMeshes << std::endl;
+        //std::cout << "网格数量" << node->mNumMeshes << std::endl;
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
@@ -151,12 +151,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     float value;
     aiString name;
     material->Get(AI_MATKEY_NAME, name);
-    std::cout << name.data << std::endl;
+    //std::cout << name.data << std::endl;
     material->Get(AI_MATKEY_COLOR_AMBIENT, color);
     mat.Ka = glm::vec4(color.r, color.g, color.b, 1.0f);
     material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
     mat.Kd = glm::vec4(color.r, color.g, color.b, 1.0f);
-    std::cout << "color:" << color.r << " " << color.g << " " << color.b << std::endl;
+    //std::cout << "color:" << color.r << " " << color.g << " " << color.b << std::endl;
     material->Get(AI_MATKEY_COLOR_SPECULAR, color);
     mat.Ks = glm::vec4(color.r, color.g, color.b, 1.0f);
     material->Get(AI_MATKEY_SHININESS, value);
@@ -219,10 +219,10 @@ std::vector<Texture2D> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTyp
 void Model::draw(Shader& shader) {
     for (unsigned int i = 0; i < _meshes.size(); i++)
     {
-        shader.setVec4("aAmbient",_meshes[i]._mat.Ka);
-        shader.setVec4("aDiffuse", _meshes[i]._mat.Kd);
-        shader.setVec4("aSpecular", _meshes[i]._mat.Ks);
-        shader.setFloat("shininess", _meshes[i]._mat.Ns);
+        shader.setVec4("Ambient",_meshes[i]._mat.Kd * glm::vec4(glm::vec3(0.2f),1.0f));
+        shader.setVec4("Diffuse", _meshes[i]._mat.Kd);
+        shader.setVec4("Specular", _meshes[i]._mat.Ks * glm::vec4(glm::vec3(0.1f), 1.0f));
+        shader.setFloat("light.shininess", _meshes[i]._mat.Ns);
         _meshes[i].draw(shader);
     }
 }
