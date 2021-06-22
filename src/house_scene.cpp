@@ -230,6 +230,7 @@ void SceneRoaming::handleInput() {
 	// 操作立方体
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId == UserSettings::BasicVoxel::Cube)
 	{
+		// 平移
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
 			_cube->move(MoveDirection::Forward, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
@@ -238,12 +239,21 @@ void SceneRoaming::handleInput() {
 			_cube->move(MoveDirection::Left, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
 			_cube->move(MoveDirection::Right, _deltaTime);
-
+		
+		// 旋转
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
 			_cube->_rotateSpeed = 0.2f - _cube->_rotateSpeed;
 		}
-		_cube->rotate(RotateDirection::CCW, _deltaTime);  // 旋转
+		_cube->rotate(RotateDirection::CCW, _deltaTime);  
 		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
+
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_cube->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_cube->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
 		
 		return;
 	}
@@ -251,7 +261,7 @@ void SceneRoaming::handleInput() {
 	// 操作球
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId==UserSettings::BasicVoxel::Ball)
 	{
-		 
+		// 平移
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
 			_sphere->move(MoveDirection::Forward, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
@@ -260,16 +270,28 @@ void SceneRoaming::handleInput() {
 			_sphere->move(MoveDirection::Left, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
 			_sphere->move(MoveDirection::Right, _deltaTime);
-		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] != GLFW_RELEASE) {
+		
+		// 旋转
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
 			_sphere->_rotateSpeed = 0.2f - _sphere->_rotateSpeed;
 		}
+		_sphere->rotate(RotateDirection::CCW, _deltaTime);  
+		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
 
-		_sphere->rotate(RotateDirection::CCW, _deltaTime);  // 旋转
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_sphere->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_sphere->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
+		return;
 	}
 	
 	// 操作圆柱体
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId == UserSettings::BasicVoxel::Cylinder)
 	{
+		// 平移
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
 			_cylinder->move(GeoMoveDirection::Forward, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE) 
@@ -277,13 +299,29 @@ void SceneRoaming::handleInput() {
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_LEFT] != GLFW_RELEASE) 
 			_cylinder->move(GeoMoveDirection::Left, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE) 
-			_cylinder->move(GeoMoveDirection::Right, _deltaTime);
+			_cylinder->move(GeoMoveDirection::Right, _deltaTime); 
+
+		// 旋转
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
+			_cylinder->_rotateSpeed = 0.2f - _cylinder->_rotateSpeed;
+		}
+		_cylinder->rotate(GeoRotateDirection::CCW, _deltaTime);  // 旋转
+		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
+
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_cylinder->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_cylinder->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
 		return;
 	}
 
 	// 操作圆锥
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId == UserSettings::BasicVoxel::Cone)
 	{
+		// 平移
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
 			_cone->move(GeoMoveDirection::Forward, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
@@ -292,12 +330,29 @@ void SceneRoaming::handleInput() {
 			_cone->move(GeoMoveDirection::Left, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
 			_cone->move(GeoMoveDirection::Right, _deltaTime);
+
+		// 旋转
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
+			_cone->_rotateSpeed = 0.2f - _cone->_rotateSpeed;
+		}
+		_cone->rotate(GeoRotateDirection::CCW, _deltaTime);  // 旋转
+		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
+
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_cone->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_cone->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
+
 		return;
 	}
 
 	// 操作多面棱柱
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId == UserSettings::BasicVoxel::Prism)
 	{
+		// 平移
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
 			_prism->move(GeoMoveDirection::Forward, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
@@ -306,23 +361,54 @@ void SceneRoaming::handleInput() {
 			_prism->move(GeoMoveDirection::Left, _deltaTime);
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
 			_prism->move(GeoMoveDirection::Right, _deltaTime);
+
+		// 旋转
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
+			_prism->_rotateSpeed = 0.2f - _prism->_rotateSpeed;
+		}
+		_prism->rotate(GeoRotateDirection::CCW, _deltaTime);  // 旋转
+		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
+
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_prism->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_prism->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
+
 		return;
 	}
 
 	// 操作多面棱台
 	else if (_userSettings->_status.gameMode == UserSettings::GameMode::SceneCreation && _userSettings->_importBasicVoxel.actionId == UserSettings::BasicVoxel::Pyramid)
 	{
-	if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
-		_pyramid->move(GeoMoveDirection::Forward, _deltaTime);
-	if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
-		_pyramid->move(GeoMoveDirection::Backward, _deltaTime);
-	if (_window->_keyboardInput.keyStates[GLFW_KEY_LEFT] != GLFW_RELEASE)
-		_pyramid->move(GeoMoveDirection::Left, _deltaTime);
-	if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
-		_pyramid->move(GeoMoveDirection::Right, _deltaTime);
-	return;
-	}
+		// 平移
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_UP] != GLFW_RELEASE)
+			_pyramid->move(GeoMoveDirection::Forward, _deltaTime);
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_DOWN] != GLFW_RELEASE)
+			_pyramid->move(GeoMoveDirection::Backward, _deltaTime);
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_LEFT] != GLFW_RELEASE)
+			_pyramid->move(GeoMoveDirection::Left, _deltaTime);
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_RIGHT] != GLFW_RELEASE)
+			_pyramid->move(GeoMoveDirection::Right, _deltaTime);
 
+		// 旋转
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_SPACE] == GLFW_RELEASE && _window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] == GLFW_PRESS) {
+			_pyramid->_rotateSpeed = 0.2f - _pyramid->_rotateSpeed;
+		}
+		_pyramid->rotate(GeoRotateDirection::CCW, _deltaTime);  // 旋转
+		_window->_keyboardInput.prev_keyStates[GLFW_KEY_SPACE] = _window->_keyboardInput.keyStates[GLFW_KEY_SPACE];
+
+		// 缩放
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
+			_pyramid->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+		}
+		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
+			_pyramid->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+		}
+		return;
+	}
 
 	// 透视照相机的视角张角变化（在非创造模式下）
 	// zoom in
@@ -430,7 +516,6 @@ void SceneRoaming::handleUI()
 		_ui->_userSettings->_materialTexture.editInit = true;
 		break;
 	}
-
 
 	float currentX = pointLight->position.x;
 	float currentY = pointLight->position.y;

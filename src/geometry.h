@@ -36,11 +36,16 @@ public:
 
 	size_t getFaceCount() const;
 	
-	void draw(glm::mat4 projection, glm::mat4 view, PointLight& light, glm::vec3 viewPos);  // ´ýÍêÉÆ£¡£¡£¡
+	void draw(glm::mat4 projection, glm::mat4 view, PointLight& light, glm::vec3 viewPos);  
 	void draw(glm::mat4 projection, glm::mat4 view, SpotLight& light, glm::vec3 viewPos);
 
 	void move(GeoMoveDirection direction, float _deltaTime);
 	void rotate(GeoRotateDirection direction, float _deltaTime);
+	
+	// move/rotate speed
+	float _moveSpeed = 5.0f;
+	float _rotateSpeed = 0.0f;
+
 	void readObj(std::string filepath, std::vector<glm::vec3>& points, std::vector<glm::vec2>& texcoords, std::vector<glm::vec3>& normals);
 
 private:
@@ -58,9 +63,6 @@ private:
 	// texture file
 	std::string _textfile;
 
-	// move/rotate speed
-	float _moveSpeed = 5.0f;
-	float _rotateSpeed = 0.1f;
 
 	// opengl objects
 	GLuint _vao = 0;
