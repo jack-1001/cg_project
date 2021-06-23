@@ -46,8 +46,6 @@ public:
 	float _moveSpeed = 5.0f;
 	float _rotateSpeed = 0.0f;
 
-	void readObj(std::string filepath, std::vector<glm::vec3>& points, std::vector<glm::vec2>& texcoords, std::vector<glm::vec3>& normals);
-
 private:
 	// vertices of the table represented in model's own coordinate
 	std::vector<Vertex> _vertices;

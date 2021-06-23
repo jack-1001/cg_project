@@ -249,10 +249,10 @@ void SceneRoaming::handleInput() {
 
 		// 缩放
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
-			_cube->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+			_cube->scale *= glm::vec3(0.99f, 0.99f, 0.99f);
 		}
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
-			_cube->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+			_cube->scale *= glm::vec3(1.01f, 1.01f, 1.01f);
 		}
 		
 		return;
@@ -280,10 +280,10 @@ void SceneRoaming::handleInput() {
 
 		// 缩放
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
-			_sphere->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+			_sphere->scale *= glm::vec3(0.99f, 0.99f, 0.99f);
 		}
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
-			_sphere->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+			_sphere->scale *= glm::vec3(1.01f, 1.01f, 1.01f);
 		}
 		return;
 	}
@@ -310,10 +310,10 @@ void SceneRoaming::handleInput() {
 
 		// 缩放
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
-			_cylinder->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+			_cylinder->scale *= glm::vec3(0.99f, 0.99f, 0.99f);
 		}
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
-			_cylinder->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+			_cylinder->scale *= glm::vec3(1.01f, 1.01f, 1.01f);
 		}
 		return;
 	}
@@ -340,10 +340,10 @@ void SceneRoaming::handleInput() {
 
 		// 缩放
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
-			_cone->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+			_cone->scale *= glm::vec3(0.99f, 0.99f, 0.99f);
 		}
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
-			_cone->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+			_cone->scale *= glm::vec3(1.01f, 1.01f, 1.01f);
 		}
 
 		return;
@@ -371,10 +371,10 @@ void SceneRoaming::handleInput() {
 
 		// 缩放
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_MINUS] != GLFW_RELEASE) {
-			_prism->scale *= glm::vec3(0.95f, 0.95f, 0.95f);
+			_prism->scale *= glm::vec3(0.99f, 0.99f, 0.99f);
 		}
 		if (_window->_keyboardInput.keyStates[GLFW_KEY_EQUAL] != GLFW_RELEASE) {
-			_prism->scale *= glm::vec3(1.05f, 1.05f, 1.05f);
+			_prism->scale *= glm::vec3(1.01f, 1.01f, 1.01f);
 		}
 
 		return;
@@ -637,8 +637,8 @@ void SceneRoaming::renderFrame() {
 		if (_ui->_userSettings->_importBasicVoxel.firstimportCylinder) {
 			float x = _cameras[activeCameraIndex]->position.x + _cameras[activeCameraIndex]->getFront().x * 3;
 			float z = _cameras[activeCameraIndex]->position.z + _cameras[activeCameraIndex]->getFront().z * 3;
-			_cylinder->scale = glm::vec3{ 0.16f, 0.16f, 0.16f };
-			_cylinder->position = glm::vec3(x - 0.6f, -0.8f, z);
+			_cylinder->scale = glm::vec3{ 0.4f, 0.4f, 0.4f };
+			_cylinder->position = glm::vec3(x - 0.6f, -0.5f, z);
 			_ui->_userSettings->_importBasicVoxel.firstimportCylinder = false;
 		}
 		if (globalOption.light.compare("PointLight") == 0) {
@@ -656,8 +656,8 @@ void SceneRoaming::renderFrame() {
 		if (_ui->_userSettings->_importBasicVoxel.firstimportCone) {
 			float x = _cameras[activeCameraIndex]->position.x + _cameras[activeCameraIndex]->getFront().x * 3;
 			float z = _cameras[activeCameraIndex]->position.z + _cameras[activeCameraIndex]->getFront().z * 3;
-			_cone->scale = glm::vec3{ 0.16f, 0.16f, 0.16f };
-			_cone->position = glm::vec3(x + 0.3f, -0.8f, z);
+			_cone->scale = glm::vec3{ 0.4f, 0.4f, 0.4f };
+			_cone->position = glm::vec3(x + 0.3f, -0.5f, z);
 			_ui->_userSettings->_importBasicVoxel.firstimportCone = false;
 		}
 		if (globalOption.light.compare("PointLight") == 0) {
@@ -675,8 +675,8 @@ void SceneRoaming::renderFrame() {
 		if (_ui->_userSettings->_importBasicVoxel.firstimportPrism) {
 			float x = _cameras[activeCameraIndex]->position.x + _cameras[activeCameraIndex]->getFront().x * 3;
 			float z = _cameras[activeCameraIndex]->position.z + _cameras[activeCameraIndex]->getFront().z * 3;
-			_prism->scale = glm::vec3{ 0.2f, 0.2f, 0.2f };
-			_prism->position = glm::vec3(x + 1.2f, -0.8f, z);
+			_prism->scale = glm::vec3{ 0.4f, 0.4f, 0.4f };
+			_prism->position = glm::vec3(x + 1.2f, -0.5f, z);
 			_ui->_userSettings->_importBasicVoxel.firstimportPrism = false;
 		}
 		if (globalOption.light.compare("PointLight") == 0) {
@@ -694,8 +694,8 @@ void SceneRoaming::renderFrame() {
 		if (_ui->_userSettings->_importBasicVoxel.firstimportPyramid) {
 			float x = _cameras[activeCameraIndex]->position.x + _cameras[activeCameraIndex]->getFront().x * 3;
 			float z = _cameras[activeCameraIndex]->position.z + _cameras[activeCameraIndex]->getFront().z * 3;
-			_pyramid->scale = glm::vec3{ 0.2f, 0.2f, 0.2f };
-			_pyramid->position = glm::vec3(x + 2.2f, -0.8f, z);
+			_pyramid->scale = glm::vec3{ 0.35f, 0.3f, 0.35f };
+			_pyramid->position = glm::vec3(x + 2.2f, -0.5f, z);
 			_ui->_userSettings->_importBasicVoxel.firstimportPyramid = false;
 		}
 		if (globalOption.light.compare("PointLight") == 0) {

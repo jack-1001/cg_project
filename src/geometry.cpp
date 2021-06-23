@@ -6,157 +6,219 @@
 
 using namespace std;
 
-void Geometry::readObj(   // 读入obj的格式
-	std::string filepath,
-	std::vector<glm::vec3>& points,
-	std::vector<glm::vec2>& texcoords,
-	std::vector<glm::vec3>& normals
-)
-{
-	// 顶点属性
-	std::vector<glm::vec3> vectexPosition;
-	std::vector<glm::vec2> vertexTexcoord;
-	std::vector<glm::vec3> vectexNormal;
-
-	// 面片索引信息
-	std::vector<glm::ivec3> positionIndex;
-	std::vector<glm::ivec3> texcoordIndex;
-	std::vector<glm::ivec3> normalIndex;
-
-	// 打开文件流
-	std::ifstream fin(filepath);
-	std::string line;
-	if (!fin.is_open())
-	{
-		std::cout << "文件 " << filepath << " 打开失败" << std::endl;
-		exit(-1);
-	}
-
-	// 按行读取
-	while (std::getline(fin, line))
-	{
-		std::istringstream sin(line);   // 以一行的数据作为 string stream 解析并且读取
-		std::string type;
-		GLfloat x, y, z;
-		int v0, vt0, vn0;   // 面片第 1 个顶点的【位置，纹理坐标，法线】索引
-		int v1, vt1, vn1;   // 2
-		int v2, vt2, vn2;   // 3
-		int v3, vt3, vn3;   // 3
-		char slash;
-
-		// 读取obj文件
-		sin >> type;
-		if (type == "v") {
-			sin >> x >> y >> z;
-			vectexPosition.push_back(glm::vec3(x, y, z));
-		}
-		if (type == "vt") {
-			sin >> x >> y;
-			vertexTexcoord.push_back(glm::vec2(x, y));
-		}
-		if (type == "vn") {
-			sin >> x >> y >> z;
-			vectexNormal.push_back(glm::vec3(x, y, z));
-		}
-		if (type == "f") {
-			sin >> v0 >> slash >> vt0 >> slash >> vn0;
-			sin >> v1 >> slash >> vt1 >> slash >> vn1;
-			sin >> v2 >> slash >> vt2 >> slash >> vn2;
-			sin >> v3 >> slash >> vt3 >> slash >> vn3;
-
-			// first triangle
-			positionIndex.push_back(glm::ivec3(v0 - 1, v1 - 1, v2 - 1));
-			texcoordIndex.push_back(glm::ivec3(vt0 - 1, vt1 - 1, vt2 - 1));
-			normalIndex.push_back(glm::ivec3(vn0 - 1, vn1 - 1, vn2 - 1));
-			// second triangle
-			positionIndex.push_back(glm::ivec3(v2 - 1, v3 - 1, v0 - 1));
-			texcoordIndex.push_back(glm::ivec3(vt2 - 1, vt3 - 1, vt0 - 1));
-			normalIndex.push_back(glm::ivec3(vn2 - 1, vn3 - 1, vn0 - 1));
-		}
-	}
-
-	// 根据面片信息生成最终传入顶点着色器的顶点数据
-	for (int i = 0; i < positionIndex.size(); i++)
-	{
-		// 顶点位置
-		points.push_back(vectexPosition[positionIndex[i].x]);
-		points.push_back(vectexPosition[positionIndex[i].y]);
-		points.push_back(vectexPosition[positionIndex[i].z]);
-
-		// 顶点纹理坐标
-		texcoords.push_back(vertexTexcoord[texcoordIndex[i].x]);
-		texcoords.push_back(vertexTexcoord[texcoordIndex[i].y]);
-		texcoords.push_back(vertexTexcoord[texcoordIndex[i].z]);
-
-		// 顶点法线
-		normals.push_back(vectexNormal[normalIndex[i].x]);
-		normals.push_back(vectexNormal[normalIndex[i].y]);
-		normals.push_back(vectexNormal[normalIndex[i].z]);
-	}
-}
-
-
-std::string getPath(int type) {    // choose geometry type
-	std::string filepath = "../data/cube.obj";
-	switch (type)  {
-	case 0:
-		filepath = "../data/cube.obj";
-		break;
-	case 1:
-		filepath = "../data/sphere.obj";
-		break;
-	case 2:
-		filepath = "../data/cylinder.obj";
-		break;
-	case 3:
-		filepath = "../data/cone.obj";
-		break;
-	case 4:
-		filepath = "../data/prism.obj";
-		break;
-	case 5:
-		filepath = "../data/pyramid.obj";
-		break;
-	default:
-		break;
-	}
-	return filepath;
-}
-
 Geometry::Geometry(int type){
 	geoType = type;
-	std::string filepath = getPath(type);  // get geometry file type
 	vector<glm::vec3> m_vertices;
 	vector<glm::vec2> m_uvs;
 	vector<glm::vec3> m_normals;
 
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-
-	readObj(filepath.c_str(), m_vertices, m_uvs, m_normals);
-
+	
 	std::unordered_map<Vertex, uint32_t> uniqueVertices;
 
-	int size = m_vertices.size();
-	for (int i = 0; i < size; i++) {
-		Vertex vertex{};
-		vertex.position.x = m_vertices[i][0];
-		vertex.position.y = m_vertices[i][1];
-		vertex.position.z = m_vertices[i][2];
+	if (type == 2) {  // 圆柱
+		for (int i = 0; i <= 360; i+=5) {
+			float p = i * 3.1415926 / 180;
+			float q = (i+5) * 3.1415926 / 180;
 
-		vertex.normal.x = m_normals[i][0];
-		vertex.normal.y = m_normals[i][1];
-		vertex.normal.z = m_normals[i][2];
+			Vertex vertex[12]{};
+			vertex[0].position = glm::vec3(0.0f, 1.0f, 0.0f);
+			vertex[1].position = glm::vec3(sin(p), 1.0f, cos(p));
+			vertex[2].position = glm::vec3(sin(q), 1.0f, cos(q));
 
-		if (uniqueVertices.count(vertex) == 0) {
-			uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-			vertices.push_back(vertex);
+			vertex[3].position = vertex[1].position;
+			vertex[4].position = vertex[2].position;
+			vertex[5].position = glm::vec3(sin(q), -1.0f, cos(q));
+
+			vertex[6].position = vertex[5].position;
+			vertex[7].position = glm::vec3(sin(p), -1.0f, cos(p));
+			vertex[8].position = vertex[1].position;
+
+			vertex[9].position = vertex[6].position;
+			vertex[10].position = vertex[7].position;
+			vertex[11].position = glm::vec3(0.0f, -1.0f, 0.0f);
+
+			for (int j = 0; j < 4; j++) {
+				float x1 = vertex[0 + j * 3].position.x;
+				float x2 = vertex[1 + j * 3].position.x;
+				float x3 = vertex[2 + j * 3].position.x;
+				float y1 = vertex[0 + j * 3].position.y;
+				float y2 = vertex[1 + j * 3].position.y;
+				float y3 = vertex[2 + j * 3].position.y;
+				float z1 = vertex[0 + j * 3].position.z;
+				float z2 = vertex[1 + j * 3].position.z;
+				float z3 = vertex[2 + j * 3].position.z;
+
+				vertex[0 + j * 3].normal = vertex[1 + j * 3].normal = vertex[2 + j * 3].normal 
+					= glm::vec3((y1-y3)*(z1-z2) - (y1-y2)*(z1-z3), 
+								(x1-x2)*(z1-z3) - (z1-z2)*(x1-x3), 
+								(x1-x3)*(y1-y2) - (x1-x2)*(y1-y3));
+			}
+
+			for (int j = 0; j < 12; j++) {
+				if (uniqueVertices.count(vertex[j]) == 0) {
+					uniqueVertices[vertex[j]] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex[j]);
+				}
+				indices.push_back(uniqueVertices[vertex[j]]);
+			}
 		}
-		indices.push_back(uniqueVertices[vertex]);
+
+		_vertices = vertices;
+		_indices = indices;
 	}
 
-	_vertices = vertices;
-	_indices = indices;
+	else if (type == 3) {  // 圆锥
+		for (int i = 0; i <= 360; i += 5) {
+			float p = i * 3.1415926 / 180;
+			float q = (i + 5) * 3.1415926 / 180;
+
+			Vertex vertex[6]{};
+			vertex[0].position = glm::vec3(0.0f, 1.0f, 0.0f);
+			vertex[1].position = glm::vec3(sin(p), -1.0f, cos(p));
+			vertex[2].position = glm::vec3(sin(q), -1.0f, cos(q));
+
+			vertex[3].position = vertex[1].position;
+			vertex[4].position = vertex[2].position;
+			vertex[5].position = glm::vec3(0.0f, -1.0f, 0.0f);
+
+
+			for (int j = 0; j < 2; j++) {
+				float x1 = vertex[0 + j * 3].position.x;
+				float x2 = vertex[1 + j * 3].position.x;
+				float x3 = vertex[2 + j * 3].position.x;
+				float y1 = vertex[0 + j * 3].position.y;
+				float y2 = vertex[1 + j * 3].position.y;
+				float y3 = vertex[2 + j * 3].position.y;
+				float z1 = vertex[0 + j * 3].position.z;
+				float z2 = vertex[1 + j * 3].position.z;
+				float z3 = vertex[2 + j * 3].position.z;
+
+				vertex[0 + j * 3].normal = vertex[1 + j * 3].normal = vertex[2 + j * 3].normal
+					= glm::vec3((y1 - y2)*(z1 - z3) - (y1 - y3)*(z1 - z2),
+								(z1 - z2)*(x1 - x3) - (x1 - x2)*(z1 - z3),
+								(x1 - x2)*(y1 - y3) - (x1 - x3)*(y1 - y2));
+			}
+
+
+			for (int j = 0; j < 6; j++) {
+				if (uniqueVertices.count(vertex[j]) == 0) {
+					uniqueVertices[vertex[j]] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex[j]);
+				}
+				indices.push_back(uniqueVertices[vertex[j]]);
+			}
+		}
+
+		_vertices = vertices;
+		_indices = indices;
+	}
+
+	else if (type == 4) {  // 多面棱柱
+		for (int i = 0; i <= 360; i += 72) {
+			float p = i * 3.1415926 / 180;
+			float q = (i + 72) * 3.1415926 / 180;
+
+			Vertex vertex[12]{};
+			vertex[0].position = glm::vec3(0.0f, 1.0f, 0.0f);
+			vertex[1].position = glm::vec3(sin(p), 1.0f, cos(p));
+			vertex[2].position = glm::vec3(sin(q), 1.0f, cos(q));
+
+			vertex[3].position = vertex[1].position;
+			vertex[4].position = vertex[2].position;
+			vertex[5].position = glm::vec3(sin(q), -1.0f, cos(q));
+
+			vertex[6].position = vertex[5].position;
+			vertex[7].position = glm::vec3(sin(p), -1.0f, cos(p));
+			vertex[8].position = vertex[1].position;
+
+			vertex[9].position = vertex[6].position;
+			vertex[10].position = vertex[7].position;
+			vertex[11].position = glm::vec3(0.0f, -1.0f, 0.0f);
+
+			for (int j = 0; j < 4; j++) {
+				float x1 = vertex[0 + j * 3].position.x;
+				float x2 = vertex[1 + j * 3].position.x;
+				float x3 = vertex[2 + j * 3].position.x;
+				float y1 = vertex[0 + j * 3].position.y;
+				float y2 = vertex[1 + j * 3].position.y;
+				float y3 = vertex[2 + j * 3].position.y;
+				float z1 = vertex[0 + j * 3].position.z;
+				float z2 = vertex[1 + j * 3].position.z;
+				float z3 = vertex[2 + j * 3].position.z;
+
+				vertex[0 + j * 3].normal = vertex[1 + j * 3].normal = vertex[2 + j * 3].normal
+					= glm::vec3((y1 - y3)*(z1 - z2) - (y1 - y2)*(z1 - z3),
+								(x1 - x2)*(z1 - z3) - (z1 - z2)*(x1 - x3),
+								(x1 - x3)*(y1 - y2) - (x1 - x2)*(y1 - y3));
+			}
+
+
+			for (int j = 0; j < 12; j++) {
+				if (uniqueVertices.count(vertex[j]) == 0) {
+					uniqueVertices[vertex[j]] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex[j]);
+				}
+				indices.push_back(uniqueVertices[vertex[j]]);
+			}
+		}
+
+		_vertices = vertices;
+		_indices = indices;
+	}
+	else if (type == 5) {  // 多面棱台
+		for (int i = 0; i <= 360; i += 72) {
+			float p = i * 3.1415926 / 180;
+			float q = (i + 72) * 3.1415926 / 180;
+
+			Vertex vertex[12]{};
+			vertex[0].position = glm::vec3(0.0f, 1.0f, 0.0f);
+			vertex[1].position = glm::vec3(sin(p)*0.75, 1.0f, cos(p)*0.75);
+			vertex[2].position = glm::vec3(sin(q)*0.75, 1.0f, cos(q)*0.75);
+
+			vertex[3].position = vertex[1].position;
+			vertex[4].position = vertex[2].position;
+			vertex[5].position = glm::vec3(sin(q)*1.5, -1.0f, cos(q)*1.5);
+
+			vertex[6].position = vertex[5].position;
+			vertex[7].position = glm::vec3(sin(p)*1.5, -1.0f, cos(p)*1.5);
+			vertex[8].position = vertex[1].position;
+
+			vertex[9].position = vertex[6].position;
+			vertex[10].position = vertex[7].position;
+			vertex[11].position = glm::vec3(0.0f, -1.0f, 0.0f);
+
+			for (int j = 0; j < 4; j++) {
+				float x1 = vertex[0 + j * 3].position.x;
+				float x2 = vertex[1 + j * 3].position.x;
+				float x3 = vertex[2 + j * 3].position.x;
+				float y1 = vertex[0 + j * 3].position.y;
+				float y2 = vertex[1 + j * 3].position.y;
+				float y3 = vertex[2 + j * 3].position.y;
+				float z1 = vertex[0 + j * 3].position.z;
+				float z2 = vertex[1 + j * 3].position.z;
+				float z3 = vertex[2 + j * 3].position.z;
+
+				vertex[0 + j * 3].normal = vertex[1 + j * 3].normal = vertex[2 + j * 3].normal
+					= glm::vec3((y1 - y3)*(z1 - z2) - (y1 - y2)*(z1 - z3),
+								(x1 - x2)*(z1 - z3) - (z1 - z2)*(x1 - x3),
+								(x1 - x3)*(y1 - y2) - (x1 - x2)*(y1 - y3));
+			}
+
+
+			for (int j = 0; j < 12; j++) {
+				if (uniqueVertices.count(vertex[j]) == 0) {
+					uniqueVertices[vertex[j]] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex[j]);
+				}
+				indices.push_back(uniqueVertices[vertex[j]]);
+			}
+		}
+
+		_vertices = vertices;
+		_indices = indices;
+	}
 
 	Material mat = { 32.0f,glm::vec4(0.5f,0.5f,0.5f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(0.01f,0.01f,0.01f,1.0f),1.0f,1.0f,2 };
 	_material = mat;
